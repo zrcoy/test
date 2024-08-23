@@ -2,6 +2,11 @@
   "name": "googlemap_demo",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0",
+    "yarn": "Please do not use yarn, use npm instead."
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
