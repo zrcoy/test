@@ -1,0 +1,22 @@
+.map-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.actions-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.spinner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

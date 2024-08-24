@@ -6,7 +6,7 @@ import {
   HomeOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 const { Sider } = Layout
 function getItem(label, key, icon, children) {
@@ -18,28 +18,15 @@ function getItem(label, key, icon, children) {
   }
 }
 const items = [
-  getItem('Home', '1', <HomeOutlined />),
-  getItem('Map', '2', <GoogleOutlined />),
-  getItem('List', '3', <UnorderedListOutlined />),
+  getItem('Home', '/', <HomeOutlined />),
+  getItem('Map', '/map', <GoogleOutlined />),
+  getItem('List', '/list', <UnorderedListOutlined />),
 ]
 
 export default function CustomLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const router = useRouter()
-
-  const handleSidebarNavigation = (item) => {
-    console.log({ item })
-
-    if (item.key === '1') {
-      router.push('/')
-    }
-    if (item.key === '2') {
-      router.push('/map')
-    }
-    if (item.key === '3') {
-      router.push('/list')
-    }
-  }
+  const pathname = usePathname()
 
   return (
     <Layout
@@ -54,10 +41,10 @@ export default function CustomLayout({ children }) {
       >
         <Menu
           theme="dark"
-          defaultSelectedKeys={['1']}
+          selectedKeys={[pathname]}
           mode="inline"
           items={items}
-          onSelect={(item) => handleSidebarNavigation(item)}
+          onSelect={(item) => router.push(item.key)}
         />
       </Sider>
       {children}
