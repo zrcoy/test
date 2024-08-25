@@ -67,15 +67,12 @@ export const useGeofence = () => {
     }
   }, [polygons])
 
-  // Recreate polygons on the map when the component mounts
-  useEffect(() => {
-    console.log('hit')
-    console.log('mapRef.current: ', mapRef.current)
-    console.log('isLoaded: ', isLoaded)
+  const recreate = () => {}
 
+  // Recreate polygons on the map when the component mounts
+  const onMapLoad = useCallback(() => {
     if (mapRef.current && isLoaded) {
       polygons.forEach((polygonData) => {
-        // Only create a new polygon if it doesn't already exist
         if (!polygonData.ref) {
           const polygon = new window.google.maps.Polygon({
             paths: polygonData.path,
@@ -89,15 +86,15 @@ export const useGeofence = () => {
             draggable: false,
           })
 
-          // Save the reference to the polygon so it's not recreated
+          // Update the polygons with a reference to the polygon on the map
           polygonData.ref = polygon
         }
       })
-      console.log('hit2')
-      // Set the updated polygons to trigger a re-render if necessary
+
+      // Force an update to the polygons array to ensure it is in sync
       setPolygons([...polygons])
     }
-  }, [isLoaded, mapRef.current])
+  }, [polygons, isLoaded])
 
   // AddModal state management related
   const handleAddOk = () => {
@@ -274,5 +271,6 @@ export const useGeofence = () => {
     onPolygonComplete,
     handleDeleteOk,
     mapRef,
+    onMapLoad,
   }
 }

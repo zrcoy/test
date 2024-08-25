@@ -33,6 +33,7 @@ const MapPage = () => {
     handleDeleteOk,
     handleCancel,
     mapRef,
+    onMapLoad,
   } = useGeofence()
 
   console.log('polygons: ', polygons)
@@ -115,6 +116,7 @@ const MapPage = () => {
       )}
 
       <MapComponent
+        onMapLoad={onMapLoad}
         mapRef={mapRef}
         isLoaded={isLoaded}
         userLocation={userLocation}

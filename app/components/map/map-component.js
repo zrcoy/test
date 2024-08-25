@@ -11,10 +11,10 @@ const MapComponent = ({
   drawingManagerRef,
   onPolygonComplete,
   mapRef,
+  onMapLoad,
 }) => {
   useEffect(() => {
     const loadAdvancedMarker = async () => {
-      console.log('loadAdvencedMarker()')
       const { AdvancedMarkerElement } =
         await google.maps.importLibrary('marker')
 
@@ -44,7 +44,10 @@ const MapComponent = ({
       mapContainerStyle={MapConst.defaultContainerStyle}
       center={userLocation || MapConst.defaultCenter}
       zoom={10}
-      onLoad={(map) => (mapRef.current = map)}
+      onLoad={(map) => {
+        mapRef.current = map
+        onMapLoad()
+      }}
       options={{ mapId: process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID }}
     >
       <DrawingManager
