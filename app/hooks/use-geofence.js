@@ -182,27 +182,86 @@ export const useGeofence = () => {
   )
 
   const handleComplete = () => {
-    // Instead of retrieving the points from the polygon to connect first and last point, we can do this trick
-    // Set drawingManager's mode to be null
-    if (activeAction === 'add') {
-      resetAction()
-      return
-    }
     if (activeAction === 'edit' && currentEditingPolygonRef.current) {
+      // Get the updated path of the polygon
+      const updatedPath = currentEditingPolygonRef.current
+        .getPath()
+        .getArray()
+        .map((latLng) => ({
+          lat: latLng.lat(),
+          lng: latLng.lng(),
+        }))
+      // Update the polygon in the polygons array
+      setPolygons((prevPolygons) =>
+        prevPolygons.map((polygon) =>
+          polygon.ref === currentEditingPolygonRef.current
+            ? { ...polygon, path: updatedPath }
+            : polygon,
+        ),
+      )
+
+      // Update localStorage with the new polygon path
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const updatedPolygons = polygons.map((polygon) =>
+          polygon.ref === currentEditingPolygonRef.current
+            ? { ...polygon, path: updatedPath }
+            : polygon,
+        )
+
+        const simplifiedPolygons = updatedPolygons.map(
+          ({ id, name, borderColor, fillColor, path }) => ({
+            id,
+            name,
+            borderColor,
+            fillColor,
+            path,
+          }),
+        )
+        localStorage.setItem(
+          'geofencePolygons',
+          JSON.stringify(simplifiedPolygons),
+        )
+      }
+
+      // Disable editing after completion
       currentEditingPolygonRef.current.setOptions({
         editable: false,
         draggable: false,
         clickable: false,
       })
     } else if (activeAction === 'delete' && currentEditingPolygonRef.current) {
+      // Handle polygon deletion
       currentEditingPolygonRef.current.setMap(null)
       setPolygons((prevPolygons) =>
         prevPolygons.filter(
           (polygon) => polygon.ref !== currentEditingPolygonRef.current,
         ),
       )
+
+      // Update localStorage after deletion
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const updatedPolygons = polygons.filter(
+          (polygon) => polygon.ref !== currentEditingPolygonRef.current,
+        )
+        const simplifiedPolygons = updatedPolygons.map(
+          ({ id, name, borderColor, fillColor, path }) => ({
+            id,
+            name,
+            borderColor,
+            fillColor,
+            path,
+          }),
+        )
+        localStorage.setItem(
+          'geofencePolygons',
+          JSON.stringify(simplifiedPolygons),
+        )
+      }
     }
 
+    // For the case of adding a polygon
+    // Instead of retrieving the points from the polygon to connect first and last point, we can do this trick
+    // Set drawingManager's mode to be null
     resetAction()
   }
 
