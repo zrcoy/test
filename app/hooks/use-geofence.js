@@ -178,7 +178,7 @@ export const useGeofence = () => {
 
       resetAction()
     },
-    [borderColor, fillColor, name, setPolygons, drawingManagerRef],
+    [borderColor, fillColor, name, setPolygons],
   )
 
   const handleComplete = () => {

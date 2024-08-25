@@ -29,7 +29,7 @@ const MapComponent = ({
     if (isLoaded && userLocation) {
       loadAdvancedMarker()
     }
-  }, [isLoaded, userLocation])
+  }, [isLoaded, mapRef, userLocation])
 
   if (!isLoaded) {
     return (
