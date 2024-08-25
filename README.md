@@ -64,6 +64,7 @@ A React-based web application for managing geofences on Google Maps. This applic
    Create a `.env.local` file in the root directory of your project and add the following:
    ```bash
    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+   NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=your-google-maps-map-id
    ```
 
 ### Running the Application
