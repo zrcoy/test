@@ -52,12 +52,22 @@ export const useGeofence = () => {
   useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
       const simplifiedPolygons = polygons.map(
-        ({ id, name, borderColor, fillColor, path }) => ({
+        ({
           id,
           name,
           borderColor,
           fillColor,
           path,
+          displayOnMap,
+          addedDate,
+        }) => ({
+          id,
+          name,
+          borderColor,
+          fillColor,
+          path,
+          displayOnMap,
+          addedDate,
         }),
       )
       localStorage.setItem(
@@ -66,8 +76,6 @@ export const useGeofence = () => {
       )
     }
   }, [polygons])
-
-  const recreate = () => {}
 
   // Recreate polygons on the map when the component mounts
   const onMapLoad = useCallback(() => {
@@ -168,6 +176,8 @@ export const useGeofence = () => {
         borderColor,
         path,
         ref: polygon,
+        displayOnMap: true,
+        addedDate: new Date().toLocaleString(),
       }
       setPolygons((prevPolygons) => [...prevPolygons, newPolygon])
       polygon.setOptions({

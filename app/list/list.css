@@ -1,0 +1,57 @@
+.list-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.ant-input {
+  display: block;
+  margin: 0 auto;
+  width: 300px;
+  text-align: center;
+}
+
+.color-cell {
+  display: flex;
+  align-items: center;
+}
+
+.color-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 1px solid #000;
+}
+
+/* Coordinates cell to handle ellipsis */
+.ant-table-cell-ellipsis {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Center the Delete Selected button */
+.ant-btn-primary {
+  margin-top: 16px;
+}
+
+/* Center the Display on Map checkbox */
+.display-checkbox-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .ant-input {
+    width: 100%;
+  }
+
+  .ant-table-cell-ellipsis {
+    max-width: 100px;
+  }
+}
