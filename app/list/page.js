@@ -6,7 +6,7 @@ import { useGeofence } from '../hooks/use-geofence'
 import './list.css'
 
 const ListPage = () => {
-  const { polygons, setPolygons } = useGeofence()
+  const { polygons, setPolygons, onMapLoad } = useGeofence()
   const [isClient, setIsClient] = useState(false)
   const [filteredPolygons, setFilteredPolygons] = useState(polygons)
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
@@ -35,6 +35,17 @@ const ListPage = () => {
       polygon.name.toLowerCase().includes(searchText),
     )
     setFilteredPolygons(filteredData)
+  }
+
+  const handleDisplayOnMapChange = (record, checked) => {
+    const updatedPolygons = polygons.map((polygon) =>
+      polygon.id === record.id
+        ? { ...polygon, displayOnMap: checked }
+        : polygon,
+    )
+    setPolygons(updatedPolygons)
+    localStorage.setItem('geofencePolygons', JSON.stringify(updatedPolygons))
+    onMapLoad() // Ensure the map updates to reflect the changes
   }
 
   const columns = [
@@ -90,18 +101,7 @@ const ListPage = () => {
         <div className="display-checkbox-cell">
           <Checkbox
             checked={record.displayOnMap}
-            onChange={(e) => {
-              const updatedPolygons = polygons.map((polygon) =>
-                polygon.id === record.id
-                  ? { ...polygon, displayOnMap: e.target.checked }
-                  : polygon,
-              )
-              setPolygons(updatedPolygons)
-              localStorage.setItem(
-                'geofencePolygons',
-                JSON.stringify(updatedPolygons),
-              )
-            }}
+            onChange={(e) => handleDisplayOnMapChange(record, e.target.checked)}
           />
         </div>
       ),

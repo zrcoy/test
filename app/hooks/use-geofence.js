@@ -86,7 +86,7 @@ export const useGeofence = () => {
             paths: polygonData.path,
             strokeColor: polygonData.borderColor,
             fillColor: polygonData.fillColor,
-            map: mapRef.current,
+            map: polygonData.displayOnMap ? mapRef.current : null,
           })
 
           polygon.setOptions({
@@ -96,6 +96,10 @@ export const useGeofence = () => {
 
           // Update the polygons with a reference to the polygon on the map
           polygonData.ref = polygon
+        } else {
+          polygonData.ref.setMap(
+            polygonData.displayOnMap ? mapRef.current : null,
+          ) // Update the visibility based on displayOnMap
         }
       })
 
