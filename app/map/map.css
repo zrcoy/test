@@ -5,12 +5,18 @@
   height: 100vh;
   justify-content: space-between;
   padding: 15px;
+  gap: 30px;
+}
+
+.actions-bar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .actions-bar {
   display: flex;
   gap: 10px;
-  align-items: center;
 }
 
 .spinner {
@@ -19,4 +25,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.add-geofence-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirm-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: flex-end;
 }

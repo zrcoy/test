@@ -1,176 +1,127 @@
 'use client'
-import { useJsApiLoader, GoogleMap, Polygon } from '@react-google-maps/api'
-import { Spin, Button, Modal, Input, Select } from 'antd'
-import { useState, useCallback, useEffect } from 'react'
+
+import { Button } from 'antd'
+import MapComponent from '../components/map/map-component'
+import AddGeofenceModal from '../components/map/add-geofence-modal'
+import { useGeofence } from '../hooks/use-geofence'
+import { MapConst } from '../constants/map-const'
 import './map.css'
+import EditGeofenceModal from '../components/map/edit-geofence-modal'
+import DeleteGeofenceModal from '../components/map/delete-geofence-modal'
 
 const MapPage = () => {
-  const [center, setCenter] = useState({ lat: -3.745, lng: -38.523 })
-  const [loadingLocation, setLoadingLocation] = useState(true)
-  const [geofences, setGeofences] = useState([])
-  const [drawing, setDrawing] = useState(false)
-  const [currentGeofence, setCurrentGeofence] = useState([])
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [geofenceProps, setGeofenceProps] = useState({
-    name: '',
-    borderColor: '#FF0000',
-    fillColor: '#FF0000',
-  })
-  console.log('geofences:', geofences)
-  console.log('currentGeofence:', currentGeofence)
-  console.log('geofenceProps:', geofenceProps)
+  // Custom hook to handle geofence state
+  const {
+    isLoaded,
+    name,
+    setName,
+    borderColor,
+    setBorderColor,
+    fillColor,
+    setFillColor,
+    polygons,
+    userLocation,
+    showModal,
+    closeModal,
+    modal,
+    handleAddOk,
+    handleEditOk,
+    drawingManagerRef,
+    handleComplete,
+    activeAction,
+    onPolygonComplete,
+    handleDeleteOk,
+    handleCancel,
+    mapRef,
+  } = useGeofence()
 
-  const containerStyle = {
-    width: '100%',
-    height: '85vh',
-  }
-
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  })
-
-  const [map, setMap] = useState(null)
-
-  const onLoad = useCallback(
-    function callback(map) {
-      const bounds = new window.google.maps.LatLngBounds(center)
-      map.fitBounds(bounds)
-      setMap(map)
-    },
-    [center],
-  )
-
-  const onUnmount = useCallback(function callback(map) {
-    setMap(null)
-  }, [])
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCenter({ lat: -3.745, lng: -38.523 })
-          setLoadingLocation(false)
-          console.log('User location:', position.coords)
-        },
-        () => {
-          console.error('Error getting user location')
-          setLoadingLocation(false)
-        },
-      )
-    } else {
-      console.error('Geolocation is not supported by this browser')
-      setLoadingLocation(false)
-    }
-  }, [])
-
-  const handleMapClick = (event) => {
-    if (drawing) {
-      setCurrentGeofence([
-        ...currentGeofence,
-        { lat: event.latLng.lat(), lng: event.latLng.lng() },
-      ])
-    }
-  }
-
-  const handleAddGeofence = () => {
-    setIsModalVisible(true)
-  }
-
-  const handleStartDrawing = () => {
-    setDrawing(true)
-    setIsModalVisible(false)
-  }
-
-  const handleCompleteGeofence = () => {
-    setGeofences([...geofences, { ...geofenceProps, path: currentGeofence }])
-    setCurrentGeofence([])
-    setDrawing(false)
-  }
-
-  const handleModalChange = (e) => {
-    const { name, value } = e.target
-    setGeofenceProps({ ...geofenceProps, [name]: value })
-  }
+  console.log('polygons: ', polygons)
 
   return (
     <div className="map-container">
-      <div className="actions-bar">
-        <div style={{ fontSize: 30, marginRight: 30 }}>Geofences</div>
-        <Button type="primary" onClick={handleAddGeofence}>
-          Add
-        </Button>
-        <Button type="primary">Delete</Button>
-        <Button type="primary">Edit</Button>
+      <div className="actions-bar-container">
+        <div className="actions-bar">
+          <Button
+            type="primary"
+            onClick={() => showModal('add')}
+            disabled={activeAction !== null}
+          >
+            Add
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => showModal('edit')}
+            disabled={activeAction !== null}
+          >
+            Edit
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => showModal('delete')}
+            disabled={activeAction !== null}
+          >
+            Delete
+          </Button>
+        </div>
+
+        {activeAction && (
+          <div className="confirm-actions-bar">
+            <Button type="primary" onClick={handleComplete}>
+              Complete
+            </Button>
+            {/*TODO: revert for edit tbd*/}
+            <Button
+              type="default"
+              onClick={handleCancel}
+              disabled={activeAction === 'edit'}
+            >
+              Cancel
+            </Button>
+          </div>
+        )}
       </div>
 
-      {isLoaded && !loadingLocation ? (
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
-          zoom={10}
-          onLoad={onLoad}
-          onUnmount={onUnmount}
-          onClick={handleMapClick}
-        >
-          {geofences.map((geofence, index) => (
-            <Polygon
-              key={index}
-              paths={geofence.path}
-              options={{
-                fillColor: geofence.fillColor,
-                fillOpacity: 0.4,
-                strokeColor: geofence.borderColor,
-                strokeOpacity: 1,
-                strokeWeight: 2,
-              }}
-            />
-          ))}
-          {drawing && (
-            <Polygon
-              paths={currentGeofence}
-              options={{
-                fillColor: geofenceProps.fillColor,
-                fillOpacity: 0.4,
-                strokeColor: geofenceProps.borderColor,
-                strokeOpacity: 1,
-                strokeWeight: 2,
-              }}
-            />
-          )}
-        </GoogleMap>
-      ) : (
-        <div className="spinner">
-          <Spin size="large" />
-        </div>
+      {modal.type === 'add' && (
+        <AddGeofenceModal
+          isVisible={modal.visible}
+          onOk={handleAddOk}
+          onCancel={closeModal}
+          name={name}
+          setName={setName}
+          borderColor={borderColor}
+          setBorderColor={setBorderColor}
+          fillColor={fillColor}
+          setFillColor={setFillColor}
+          polygons={polygons}
+        />
       )}
 
-      <Modal
-        title="Add Geofence"
-        open={isModalVisible}
-        onOk={handleStartDrawing}
-        onCancel={() => setIsModalVisible(false)}
-      >
-        <Input name="name" placeholder="Name" onChange={handleModalChange} />
-        <Input
-          name="borderColor"
-          placeholder="Border Color"
-          onChange={handleModalChange}
+      {modal.type === 'edit' && (
+        <EditGeofenceModal
+          isVisible={modal.visible}
+          onOk={handleEditOk}
+          onCancel={closeModal}
+          polygons={polygons}
         />
-        <Input
-          name="fillColor"
-          placeholder="Fill Color"
-          onChange={handleModalChange}
-        />
-      </Modal>
-
-      {drawing && (
-        <Button type="primary" onClick={handleCompleteGeofence}>
-          Complete
-        </Button>
       )}
+
+      {modal.type === 'delete' && (
+        <DeleteGeofenceModal
+          isVisible={modal.visible}
+          onOk={handleDeleteOk}
+          onCancel={closeModal}
+          polygons={polygons}
+        />
+      )}
+
+      <MapComponent
+        mapRef={mapRef}
+        isLoaded={isLoaded}
+        userLocation={userLocation}
+        drawingManagerRef={drawingManagerRef}
+        onPolygonComplete={onPolygonComplete}
+      />
     </div>
   )
 }
-
 export default MapPage

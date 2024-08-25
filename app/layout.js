@@ -1,5 +1,5 @@
 import { Inter } from 'next/font/google'
-import CustomLayout from './components/CustomLayout'
+import CustomLayout from './components/custom-layout'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
