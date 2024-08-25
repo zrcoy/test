@@ -36,8 +36,6 @@ const MapPage = () => {
     onMapLoad,
   } = useGeofence()
 
-  console.log('polygons: ', polygons)
-
   return (
     <div className="map-container">
       <div className="actions-bar-container">
