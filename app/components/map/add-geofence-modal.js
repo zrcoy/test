@@ -76,6 +76,7 @@ const AddGeofenceModal = ({
           ]}
         >
           <Input
+            style={{ width: '100%' }}
             placeholder="Geofence Name"
             onChange={(e) => setName(e.target.value)}
           />
